@@ -361,7 +361,7 @@ if __name__ == '__main__':
         for i in range(r):
             pizza_lines.append(input(''))
 
-        print()
+        print(pizza_lines, type(pizza_lines))
         pizza_config = { 'pizza_lines': pizza_lines, 'r': r, 'c': c, 'l': l, 'h': h }
 
         # init game
@@ -378,9 +378,11 @@ if __name__ == '__main__':
 
         # run game
         action_input = KeyInput() if wasd else StandardInput()
+
         while not game.env['done']:
             # get action
             action = action_input.next()
+            print(action, type(action))
             game.step(action)
             if render: game.render()
             if name is not None:

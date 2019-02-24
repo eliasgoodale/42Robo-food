@@ -1,0 +1,1 @@
+{"state":{"ingredients_map":[[1,1,1,1,1],[1,0,0,0,1],[1,1,1,1,1]],"slices_map":[[0,0,-1,-1,-1],[0,0,-1,-1,-1],[0,0,-1,-1,-1]],"cursor_position":[0,0],"slice_mode":true,"min_each_ingredient_per_slice":1,"max_ingredients_per_slice":6},"reward":2.0,"done":false,"information":{"step":4,"action":"down","unique_ingredients":["M","T"],"score":6,"slices":[[0,0,2,1]]}}

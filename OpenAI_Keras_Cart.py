@@ -11,7 +11,7 @@ env = gym.make('CartPole-v1')
 env.reset()
 goal_steps = 500
 score_requirement = 60
-initial_games = 10000
+initial_games = 1000
 
 def model_data_preparation():
     training_data = []
@@ -28,6 +28,7 @@ def model_data_preparation():
                 game_memory.append([previous_observation, action])
                 
             previous_observation = observation
+            print(previous_observation, type(previous_observation))
             score += reward
             if done:
                 break
@@ -43,7 +44,7 @@ def model_data_preparation():
         
         env.reset()
 
-    print(accepted_scores)
+    #print(accepted_scores)
     
     return training_data
 
@@ -57,22 +58,24 @@ def build_model(input_size, output_size):
 
 def train_model(training_data):
     X = np.array([i[0] for i in training_data]).reshape(-1, len(training_data[0][0]))
+    print(X[0])
     y = np.array([i[1] for i in training_data]).reshape(-1, len(training_data[0][1]))
     model = build_model(input_size=len(X[0]), output_size=len(y[0]))
     
-    model.fit(X, y, epochs=1000)
+    model.fit(X, y, epochs=10)
     return model
 
 
 training_data = model_data_preparation()
-trained_model = train_model(training_data)
+print(training_data[0])
+#trained_model = train_model(training_data)
 
-
+'''
 scores = []
 choices = []
 for each_game in range(100):
     score = 0
-    prev_obs = []
+    prev_obs = np.array()
     for step_index in range(goal_steps):
         if len(prev_obs)==0:
             action = random.randrange(0,2)
@@ -92,3 +95,4 @@ for each_game in range(100):
 print(scores)
 print('Average Score:', sum(scores)/len(scores))
 print('choice 1:{}  choice 0:{}'.format(choices.count(1)/len(choices),choices.count(0)/len(choices)))
+'''

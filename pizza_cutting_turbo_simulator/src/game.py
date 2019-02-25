@@ -117,13 +117,17 @@ class ServePizza:
         ingredients_map = env['state']['ingredients_map']
         slices_map = env['state']['slices_map']
 
+        ingredients_map = [[ingredients_map[j * 8 + i] for i in range(8)] for j in range(8)]
+        # print(ingredients_map)
         r,c = len(ingredients_map),len(ingredients_map[0])
         self.r, self.c = self.r_scale*r+2,self.c_scale*c+3
 
         self.initialize_pizza(unique_ingredients, ingredients_map)
 
         # cut slices
+        slices_map = [[slices_map[j * 8 + i] for i in range(8)] for j in range(8)]
         slices = self.find_slices(slices_map)
+        # print(slices_map)
         self.cut(slices)
 
         # put cursor
@@ -222,10 +226,10 @@ class Game:
 
 
     def render(self):
-        print(self.hello)
-        self.render_information()
+        # print(self.hello)
+        # self.render_information()
         self.serve_pizza.print_from(self.env)
-        print(self.legend)
+        # print(self.legend)
 
 
 

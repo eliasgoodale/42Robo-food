@@ -49,7 +49,7 @@ class EnvManager():
         obs, reward, done, info = self.start()
         obs = self.translate_observation(obs)
         while not self.current_game.env['done']:
-            #self.current_game.render()
+            self.current_game.render()
             action = self.policy.choose_action(obs)
             obs, reward, done, info = self.current_game.step(self.actions[action])
             obs = self.translate_observation(obs)

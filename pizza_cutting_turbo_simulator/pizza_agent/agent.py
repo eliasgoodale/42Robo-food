@@ -49,6 +49,7 @@ class EnvManager():
         obs, reward, done, info = self.start()
         obs = self.translate_observation(obs)
         while not self.current_game.env['done']:
+            #self.current_game.render()
             action = self.policy.choose_action(obs)
             obs, reward, done, info = self.current_game.step(self.actions[action])
             obs = self.translate_observation(obs)
@@ -71,11 +72,20 @@ class EnvManager():
     def start(self):
         return self.current_game.init(self.init_config)
 
+def gen_random_board(rows, cols):
+    selection = ['M', 'T']
+    
+    return [''.join(np.random.choice(selection) for i in range(cols)) for j in range(rows)]
+
+
+board = gen_random_board(8, 8)
+
+
 
 init_config = {
-    'pizza_lines': ['TTTTT', 'TMMMT', 'TTTTT'],
+    'pizza_lines': board,
     'r': 8,
-    'c': 5,
+    'c': 8,
     'l': 1,
     'h': 6
 }
@@ -94,8 +104,8 @@ env_settings = {
 }
 
 env = EnvManager(Game, init_config, env_settings)
-episodes = 50
-epochs = 3
+episodes = 100
+epochs = 5
 avg_scores = []
 avg_rewards = []
 
@@ -103,7 +113,7 @@ for epoch in range(epochs):
     rewards = [] 
     scores  = []
     for episode in range(episodes):
-        print(f'{epoch} => {episode}')
+        print(f'Epoch: {epoch} => {episode}')
         reward, score = env.play_game()
         rewards.append(reward)
         scores.append(score)
@@ -113,19 +123,5 @@ for epoch in range(epochs):
 
 print(avg_rewards)
 print(avg_scores)
-
-
-#env.reset(max_steps)
-#arr = np.array([[1, 0, 1, 0], [1, 0, 1, 0]])
-
-#s_key = env.uniqueStateAccessor['slices_map'].getIdFor(6)
-#n_key = env.uniqueStateAccessor['ingredients_map'].getIdFor(''.join(str(i) for i in arr.flatten()))
-#print(s_key, n_key)
-
-
-#observation, reward, done, info = env.start()
-
-#print(f'Initial State:\n{observation}\n{reward}\n{done}\n{info}')
-
 
 

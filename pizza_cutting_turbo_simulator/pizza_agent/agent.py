@@ -5,9 +5,6 @@ import numpy as np
 from policy_gradient import PolicyGradient
 from src.game import Game
 
-
-
-
 class Uniqifier(object):
     def __init__(self):
         self.id = 1
@@ -103,25 +100,54 @@ env_settings = {
 
 }
 
+
+episode = {
+    'count': 100,
+    'scores': [],
+    'rewards': [],
+    'avg_rewards': 0,
+    'avg_scores': 0,
+    'max_score': 0,
+    'max_reward': 0,
+    'trend': [],
+    'max_combined_score_reward': 0
+}
+
+epoch = {
+    'count': 5,
+    'scores': [],
+    'rewards': [],
+    'avg_rewards': 0,
+    'avg_scores': 0,
+    'max_score': 0
+}
+
 env = EnvManager(Game, init_config, env_settings)
-episodes = 100
-epochs = 5
-avg_scores = []
-avg_rewards = []
 
-for epoch in range(epochs):
-    rewards = [] 
-    scores  = []
-    for episode in range(episodes):
-        print(f'Epoch: {epoch} => {episode}')
+for epc in range(epoch['count']):
+    for eps in range(episode['count']):
+        print(f'Epoch: {epc} Game: {eps}')
         reward, score = env.play_game()
-        rewards.append(reward)
-        scores.append(score)
-    env.policy.learn()
-    avg_rewards.append(sum(rewards) / len(rewards))
-    avg_scores.append(sum(scores) / len(scores))
+        episode_score = reward + score
+        episode['max_score'] = score if score > episode['max_score'] else episode['max_score']
+        episode['max_reward'] = reward if reward > episode['max_reward'] else episode['max_reward']
+        episode['rewards'].append(reward)
+        episode['scores'].append(score)
+        if episode_score > episode['max_combined_score_reward']:
+            episode['trend'].append(episode_score)
+            episode['max_combined_score_reward'] = episode_score
+            env.policy.learn()
 
-print(avg_rewards)
-print(avg_scores)
+    epoch['rewards'].append(sum(episode['rewards']) / len(episode['rewards']))
+    epoch['scores'].append(sum(episode['scores']) / len(episode['scores']))
+    episode['rewards'] = [] 
+    episode['scores'] = []
+epoch['avg_rewards'] = sum(epoch['rewards']) / len(epoch['rewards'])
+epoch['avg_scores'] = sum(epoch['scores']) / len(epoch['scores'])
+
+
+print('reward/score trend: ', episode['trend'])
+print(f'Average over all epochs: ', epoch['avg_rewards'])
+
 
 

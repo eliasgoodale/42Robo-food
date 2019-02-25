@@ -27,9 +27,6 @@ class PolicyGradient:
         self.sess = tf.Session()
 
         if output_graph:
-            # $ tensorboard --logdir=logs
-            # http://0.0.0.0:6006/
-            # tf.train.SummaryWriter soon be deprecated, use following
             tf.summary.FileWriter("logs/", self.sess.graph)
 
         self.sess.run(tf.global_variables_initializer())

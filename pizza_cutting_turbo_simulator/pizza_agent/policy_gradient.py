@@ -11,7 +11,7 @@ class PolicyGradient:
             self,
             n_actions,
             n_features,
-            learning_rate=0.1,
+            learning_rate=0.08,
             reward_decay=0.95,
             output_graph=True,
     ):

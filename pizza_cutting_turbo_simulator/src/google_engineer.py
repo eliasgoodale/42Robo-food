@@ -3,10 +3,10 @@ from src.pizza import Pizza, Direction
 import numpy as np
 import json
 
-POSITIVE_REWARD = 2.0
-NEUTRAL_REWARD  = -0.001
+POSITIVE_REWARD = 3.0
+NEUTRAL_REWARD  = -0.01
 NEGATIVE_REWARD = -0.1
-SHUFFLE_REWARD = -0.5
+SHUFFLE_REWARD = -1
 
 class ActionNotFoundException(Exception):
     pass

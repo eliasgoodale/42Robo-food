@@ -85,7 +85,7 @@ init_config = {
     'l': 1,
     'h': 6
 }
-max_steps = 500
+max_steps = 700
 
 env_settings = {
     'actions': ['up', 'down', 'left', 'right', 'toggle'],
@@ -112,7 +112,7 @@ episode = {
 }
 
 epoch = {
-    'count': 5,
+    'count': 10,
     'scores': [],
     'rewards': [],
     'avg_rewards': 0,

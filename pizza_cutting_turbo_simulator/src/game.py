@@ -107,31 +107,31 @@ class ServePizza:
                 self.c_scale*c0+2: self.c_scale*(c1+1)+1: self.c_scale*(c1-c0+1)-2, # left, right columns
                 ] = '+'
 
-    def put_cursor_at(self, position, slice_mode):
-        r,c = position
-        self.pizza[self.r_scale*r+2,self.c_scale*c+3] = '<' if slice_mode else '['
-        self.pizza[self.r_scale*r+2,self.c_scale*c+5] = '>' if slice_mode else ']'
+    def put_cursor_at(self, position, slice_mode, r, c):
+        row, col = position
+        if (row < r - 1 and col < c - 1):
+            self.pizza[self.r_scale*row+2,self.c_scale*col+3] = '<' if slice_mode else '['
+            self.pizza[self.r_scale*row+2,self.c_scale*col+5] = '>' if slice_mode else ']'
 
-    def print_from(self, env):
+    def print_from(self, env, r, c):
         unique_ingredients = env['information']['unique_ingredients']
         ingredients_map = env['state']['ingredients_map']
         slices_map = env['state']['slices_map']
 
-        ingredients_map = [[ingredients_map[j * 8 + i] for i in range(8)] for j in range(8)]
+        ingredients_map = [[ingredients_map[j * 8 + i] for i in range(c)] for j in range(r)]
         # print(ingredients_map)
-        r,c = len(ingredients_map),len(ingredients_map[0])
         self.r, self.c = self.r_scale*r+2,self.c_scale*c+3
 
         self.initialize_pizza(unique_ingredients, ingredients_map)
 
         # cut slices
-        slices_map = [[slices_map[j * 8 + i] for i in range(8)] for j in range(8)]
+        slices_map = [[slices_map[j * 8 + i] for i in range(c)] for j in range(r)]
         slices = self.find_slices(slices_map)
         # print(slices_map)
         self.cut(slices)
 
         # put cursor
-        self.put_cursor_at(env['state']['cursor_position'], env['state']['slice_mode'])
+        self.put_cursor_at(env['state']['cursor_position'], env['state']['slice_mode'], r, c)
 
         for line in self.pizza:
             print('    {}'.format(''.join(line)))
@@ -225,10 +225,10 @@ class Game:
         print('')
 
 
-    def render(self):
+    def render(self, r, c):
         # print(self.hello)
         # self.render_information()
-        self.serve_pizza.print_from(self.env)
+        self.serve_pizza.print_from(self.env, r, c)
         # print(self.legend)
 
 

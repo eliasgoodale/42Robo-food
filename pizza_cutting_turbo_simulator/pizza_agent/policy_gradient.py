@@ -76,6 +76,9 @@ class PolicyGradient:
         self.ep_obs.append(s)
         self.ep_as.append(a)
         self.ep_rs.append(r)
+    
+    def clear_rollout(self):
+        self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
     def learn(self):
         # discount and normalize episode reward

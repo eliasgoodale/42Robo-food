@@ -42,16 +42,17 @@ class EnvManager():
 
     def play_game(self):
         rewards = []
-        self.reset(max_steps=100)
+        self.reset(max_steps=500)
         obs, reward, done, info = self.start()
         obs = self.translate_observation(obs)
         while not self.current_game.env['done']:
-            self.current_game.render(self.init_config['r'], self.init_config['c'])
             action = self.policy.choose_action(obs)
             obs, reward, done, info = self.current_game.step(self.actions[action])
             obs = self.translate_observation(obs)
             self.policy.store_transition(obs, action, reward)
             rewards.append(round(reward, 2))
+        self.current_game.render(self.init_config['r'], self.init_config['c'])
+        print (info)
         return sum(rewards), info['score']
 
     def translate_observation(self, obs):
@@ -79,8 +80,8 @@ board = gen_random_board(8, 8)
 
 init_config = {
     'pizza_lines': board,
-    'r': 3,
-    'c': 5,
+    'r': 8,
+    'c': 8,
     'l': 1,
     'h': 6
 }
@@ -125,16 +126,17 @@ for epc in range(epoch['count']):
     for eps in range(episode['count']):
         print(f'Epoch: {epc} Game: {eps}')
         reward, score = env.play_game()
-        episode_score = reward + score
+        episode_score = reward + score 
         episode['max_score'] = score if score > episode['max_score'] else episode['max_score']
         episode['max_reward'] = reward if reward > episode['max_reward'] else episode['max_reward']
         episode['rewards'].append(reward)
-        episode['scores'].append(score)
+        episode['scores'].append(score)    
         if episode_score > episode['max_combined_score_reward']:
             episode['trend'].append(episode_score)
             episode['max_combined_score_reward'] = episode_score
             env.policy.learn()
-
+        else:
+            env.policy.clear_rollout()
     epoch['rewards'].append(sum(episode['rewards']) / len(episode['rewards']))
     epoch['scores'].append(sum(episode['scores']) / len(episode['scores']))
     episode['rewards'] = [] 
@@ -142,7 +144,8 @@ for epc in range(epoch['count']):
 epoch['avg_rewards'] = sum(epoch['rewards']) / len(epoch['rewards'])
 epoch['avg_scores'] = sum(epoch['scores']) / len(epoch['scores'])
 
-
+print('epoch rewards: ', epoch['rewards'])
+print('epoch scores: ', epoch['scores'])
 print('reward/score trend: ', episode['trend'])
 print(f'Average over all epochs: ', epoch['avg_rewards'])
 

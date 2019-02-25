@@ -34,15 +34,15 @@ class EnvManager():
 
         self.actions = env_settings['actions']
 
-        self.policy = PolicyGradient(n_actions=len(self.actions), n_features=len(env_settings['state_features']))
+        self.policy = PolicyGradient(n_actions=len(self.actions), n_features=len(env_settings['state_features']), name=env_settings['policy_name'])
         self.uniqueStateAccessor = {state_feature: Uniqifier() for state_feature in env_settings['state_features']}
         
     def reset(self,max_steps):
         self.current_game = self.Game({"max_steps": max_steps})
 
-    def play_game(self):
+    def play_game(self, max_steps):
         rewards = []
-        self.reset(max_steps=500)
+        self.reset(max_steps)
         obs, reward, done, info = self.start()
         obs = self.translate_observation(obs)
         while not self.current_game.env['done']:
@@ -85,7 +85,7 @@ init_config = {
     'l': 1,
     'h': 6
 }
-max_steps = 700
+max_steps = 100
 
 env_settings = {
     'actions': ['up', 'down', 'left', 'right', 'toggle'],
@@ -95,12 +95,13 @@ env_settings = {
         'cursor_position',\
         'slice_mode',\
         'min_each_ingredient_per_slice',\
-        'max_ingredients_per_slice']
+        'max_ingredients_per_slice'],
+    'policy_name': 'default'
 }
 
 
 episode = {
-    'count': 100,
+    'count': 30,
     'scores': [],
     'rewards': [],
     'avg_rewards': 0,
@@ -149,5 +150,5 @@ epoch['avg_scores'] = sum(epoch['scores']) / len(epoch['scores'])
 print('epoch rewards: ', epoch['rewards'])
 print('epoch scores: ', epoch['scores'])
 print('reward/score trend: ', episode['trend'])
-print(f'Average over all epochs: ', epoch['avg_rewards'])
+print('Average rewards over all epochs: ', epoch['avg_rewards'])
 

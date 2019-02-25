@@ -11,20 +11,27 @@ class PolicyGradient:
             self,
             n_actions,
             n_features,
-            learning_rate=0.08,
-            reward_decay=0.95,
+            learning_rate=0.01,
+            reward_decay=0.85,
             output_graph=True,
+            saving_model=True,
+            name='default'
     ):
         self.n_actions = n_actions
         self.n_features = n_features
         self.lr = learning_rate
         self.gamma = reward_decay
-
+        self.name = name
+        self.saving_model = saving_model
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
         self._build_net()
 
         self.sess = tf.Session()
+
+        if saving_model:
+            self.saver = tf.train.Saver()
+            self.save_name = 'models/'+name+'.ckpt'
 
         if output_graph:
             tf.summary.FileWriter("logs/", self.sess.graph)
@@ -80,6 +87,10 @@ class PolicyGradient:
     def clear_rollout(self):
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
+    def save_model(self):
+        print('Saving model to: ', self.save_name)
+        self.saver.save(self.sess, self.save_name)
+
     def learn(self):
         # discount and normalize episode reward
         discounted_ep_rs_norm = self._discount_and_norm_rewards()
@@ -90,8 +101,9 @@ class PolicyGradient:
              self.tf_acts: np.array(self.ep_as),  # shape=[None, ]
              self.tf_vt: discounted_ep_rs_norm,  # shape=[None, ]
         })
-
-        self.ep_obs, self.ep_as, self.ep_rs = [], [], []    # empty episode data
+        if self.saving_model:
+            self.save_model()
+        self.clear_rollout()   # empty episode data
         return discounted_ep_rs_norm
 
     def _discount_and_norm_rewards(self):

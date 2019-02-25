@@ -11,9 +11,9 @@ class PolicyGradient:
             self,
             n_actions,
             n_features,
-            learning_rate=0.01,
+            learning_rate=0.1,
             reward_decay=0.95,
-            output_graph=False,
+            output_graph=True,
     ):
         self.n_actions = n_actions
         self.n_features = n_features
@@ -106,3 +106,4 @@ class PolicyGradient:
         discounted_ep_rs -= np.mean(discounted_ep_rs)
         discounted_ep_rs /= np.std(discounted_ep_rs)
         return discounted_ep_rs
+

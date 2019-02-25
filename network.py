@@ -41,7 +41,7 @@ with tf.name_scope('Outputs'):
 
 def build_network(X, W, B):
     with tf.name_scope('Hidden'):
-        h1_x1w1 = tf.matmul(X['1'], W['1']['h1'])
+        h1_x1w1 = tf.tf.matmul(X['1'], W['1']['h1'])
         h1_x2w2 = tf.matmull(X['2'], W['2']['h1'])
         
         h1 = tf.sigmoid(tf.add(tf.matmul(X['1'], weights['h1'], biases['b1'])))

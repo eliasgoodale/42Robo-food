@@ -46,7 +46,7 @@ class EnvManager():
         obs, reward, done, info = self.start()
         obs = self.translate_observation(obs)
         while not self.current_game.env['done']:
-            #self.current_game.render()
+            self.current_game.render(self.init_config['r'], self.init_config['c'])
             action = self.policy.choose_action(obs)
             obs, reward, done, info = self.current_game.step(self.actions[action])
             obs = self.translate_observation(obs)
@@ -77,16 +77,14 @@ def gen_random_board(rows, cols):
 
 board = gen_random_board(8, 8)
 
-
-
 init_config = {
     'pizza_lines': board,
-    'r': 8,
-    'c': 8,
+    'r': 3,
+    'c': 5,
     'l': 1,
     'h': 6
 }
-max_steps = 100
+max_steps = 500
 
 env_settings = {
     'actions': ['up', 'down', 'left', 'right', 'toggle'],
@@ -97,7 +95,6 @@ env_settings = {
         'slice_mode',\
         'min_each_ingredient_per_slice',\
         'max_ingredients_per_slice']
-
 }
 
 

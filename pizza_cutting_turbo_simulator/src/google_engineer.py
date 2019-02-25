@@ -3,9 +3,10 @@ from src.pizza import Pizza, Direction
 import numpy as np
 import json
 
-POSITIVE_REWARD = 1.0
-NEUTRAL_REWARD  = 0.0
+POSITIVE_REWARD = 2.0
+NEUTRAL_REWARD  = -0.001
 NEGATIVE_REWARD = -0.1
+SHUFFLE_REWARD = -0.5
 
 class ActionNotFoundException(Exception):
     pass
@@ -23,22 +24,33 @@ class GoogleEngineer:
         self.min_each_ingredient_per_slice = pizza_config['l']
         self.max_ingredients_per_slice = pizza_config['h']
         self.cursor_position = (0,0)
+        self.previous_position = (0, 0)
         self.slice_mode = False
         self.valid_slices = []
         self.score = 0
+        self.current_step = 0
 
     def score_of(self, slice):
         if min(self.pizza.ingredients.of(slice)) >= self.min_each_ingredient_per_slice:
             return slice.ingredients
         return 0
 
+# Add punishment here
     def move(self, direction):
         next_cursor_position = tuple(x0+x1 for x0,x1 in zip(self.cursor_position,self.delta_position[direction]))
         if (next_cursor_position[0] >= 0 and next_cursor_position[0] < self.pizza.r and
             next_cursor_position[1] >= 0 and next_cursor_position[1] < self.pizza.c):
-
-            self.cursor_position = next_cursor_position
+            if not self.current_step % 2:
+                self.previous_position = self.cursor_position
+            else:
+                self.cursor_position = next_cursor_position
+            # print(self.previous_position, self.cursor_position)
+            if (self.previous_position == next_cursor_position):
+                # print('IN')
+                return SHUFFLE_REWARD
             return NEUTRAL_REWARD
+        self.current_step+=1
+        #print(self.current_step)
         return NEGATIVE_REWARD
 
     def increase(self, direction):

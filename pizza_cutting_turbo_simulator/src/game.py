@@ -118,14 +118,14 @@ class ServePizza:
         ingredients_map = env['state']['ingredients_map']
         slices_map = env['state']['slices_map']
 
-        ingredients_map = [[ingredients_map[j * 8 + i] for i in range(c)] for j in range(r)]
+        ingredients_map = [[ingredients_map[j * c + i] for i in range(c)] for j in range(r)]
         # print(ingredients_map)
         self.r, self.c = self.r_scale*r+2,self.c_scale*c+3
 
         self.initialize_pizza(unique_ingredients, ingredients_map)
 
         # cut slices
-        slices_map = [[slices_map[j * 8 + i] for i in range(c)] for j in range(r)]
+        slices_map = [[slices_map[j * c + i] for i in range(c)] for j in range(r)]
         slices = self.find_slices(slices_map)
         # print(slices_map)
         self.cut(slices)

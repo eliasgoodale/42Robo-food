@@ -52,7 +52,7 @@ class EnvManager():
             self.policy.store_transition(obs, action, reward)
             rewards.append(round(reward, 2))
         self.current_game.render(self.init_config['r'], self.init_config['c'])
-        print (info)
+        # print (info)
         return sum(rewards), info['score']
 
     def translate_observation(self, obs):
@@ -131,12 +131,14 @@ for epc in range(epoch['count']):
         episode['max_reward'] = reward if reward > episode['max_reward'] else episode['max_reward']
         episode['rewards'].append(reward)
         episode['scores'].append(score)    
-        if episode_score > episode['max_combined_score_reward']:
-            episode['trend'].append(episode_score)
-            episode['max_combined_score_reward'] = episode_score
-            env.policy.learn()
-        else:
-            env.policy.clear_rollout()
+        #if episode_score > episode['max_combined_score_reward']:
+        #    episode['trend'].append(episode_score)
+        #    episode['max_combined_score_reward'] = episode_score
+        #    env.policy.learn()
+        #else:
+        #    env.policy.clear_rollout()
+    #Better
+    env.policy.learn()
     epoch['rewards'].append(sum(episode['rewards']) / len(episode['rewards']))
     epoch['scores'].append(sum(episode['scores']) / len(episode['scores']))
     episode['rewards'] = [] 
@@ -148,6 +150,4 @@ print('epoch rewards: ', epoch['rewards'])
 print('epoch scores: ', epoch['scores'])
 print('reward/score trend: ', episode['trend'])
 print(f'Average over all epochs: ', epoch['avg_rewards'])
-
-
 

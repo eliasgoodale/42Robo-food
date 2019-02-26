@@ -45,7 +45,9 @@ class EnvManager():
         self.reset(max_steps)
         obs, reward, done, info = self.start()
         obs = self.translate_observation(obs)
+
         while not self.current_game.env['done']:
+            # print(obs)
             action = self.policy.choose_action(obs)
             obs, reward, done, info = self.current_game.step(self.actions[action])
             obs = self.translate_observation(obs)
@@ -59,9 +61,11 @@ class EnvManager():
 
         obs['ingredients_map'] = np.array(obs['ingredients_map']).flatten()
         obs['slices_map'] = np.array(obs['slices_map']).flatten()
+        # obs['slices_map'] = sum(np.array(obs['slices_map']).flatten())
         return np.array([
             self.uniqueStateAccessor['ingredients_map'].getIdFor(''.join(str(i) for i in obs['ingredients_map'])),
-            self.uniqueStateAccessor['slices_map'].getIdFor(''.join(str(i) for i in obs['slices_map'])),
+            self.uniqueStateAccessor['slices_map'].getIdFor(''.join(str(i) for i in obs['slices_map'])) / 100,
+            #self.uniqueStateAccessor['slices_map'].getIdFor(obs['slices_map']),
             self.uniqueStateAccessor['cursor_position'].getIdFor(obs['cursor_position']),
             1 if obs['slice_mode'] else 0,
             obs['min_each_ingredient_per_slice'],
@@ -76,16 +80,16 @@ def gen_random_board(rows, cols):
     return [''.join(np.random.choice(selection) for i in range(cols)) for j in range(rows)]
 
 
-board = gen_random_board(8, 8)
+board = gen_random_board(12, 11)
 
 init_config = {
     'pizza_lines': board,
-    'r': 8,
-    'c': 8,
+    'r': 12,
+    'c': 11,
     'l': 1,
     'h': 6
 }
-max_steps = 100
+max_steps = 500
 
 env_settings = {
     'actions': ['up', 'down', 'left', 'right', 'toggle'],
@@ -101,7 +105,7 @@ env_settings = {
 
 
 episode = {
-    'count': 30,
+    'count': 50,
     'scores': [],
     'rewards': [],
     'avg_rewards': 0,
@@ -113,7 +117,7 @@ episode = {
 }
 
 epoch = {
-    'count': 10,
+    'count': 14,
     'scores': [],
     'rewards': [],
     'avg_rewards': 0,
@@ -126,7 +130,7 @@ env = EnvManager(Game, init_config, env_settings)
 for epc in range(epoch['count']):
     for eps in range(episode['count']):
         print(f'Epoch: {epc} Game: {eps}')
-        reward, score = env.play_game()
+        reward, score = env.play_game(max_steps)
         episode_score = reward + score 
         episode['max_score'] = score if score > episode['max_score'] else episode['max_score']
         episode['max_reward'] = reward if reward > episode['max_reward'] else episode['max_reward']
@@ -147,8 +151,10 @@ for epc in range(epoch['count']):
 epoch['avg_rewards'] = sum(epoch['rewards']) / len(epoch['rewards'])
 epoch['avg_scores'] = sum(epoch['scores']) / len(epoch['scores'])
 
-print('epoch rewards: ', epoch['rewards'])
-print('epoch scores: ', epoch['scores'])
+print('epoch rewards: {}'.format(epoch['rewards']))
+print('epoch scores: {}'.format(epoch['scores']))
 print('reward/score trend: ', episode['trend'])
 print('Average rewards over all epochs: ', epoch['avg_rewards'])
 
+for key, value in env.uniqueStateAccessor.items():
+    print(value.id)

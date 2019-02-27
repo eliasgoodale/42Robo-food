@@ -226,6 +226,11 @@ class Game:
         self.render_information()
         self.serve_pizza.print_from(self.env)
         print(self.legend)
+    def render_live(self):
+        #print(self.hello)
+        #self.render_information()
+        self.serve_pizza.print_from(self.env)
+        #print(self.legend)
 
 
 

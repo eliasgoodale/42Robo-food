@@ -56,9 +56,11 @@ class GoogleEngineer:
         return NEUTRAL_REWARD if new_slice is not None else NEGATIVE_REWARD
 
     def do(self, action):
+        r, c = self.cursor_position
+        slice_map = self.pizza._map
         if action == 'toggle':
             self.slice_mode = not self.slice_mode
-            return NEUTRAL_REWARD
+            return NEUTRAL_REWARD if slice_map[r][c] == -1 else NEGATIVE_REWARD
 
         if action not in Direction.__members__:
             raise ActionNotFoundException('Action \'{}\' is not recognised.'.format(action))

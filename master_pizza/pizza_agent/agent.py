@@ -4,6 +4,20 @@ import tensorflow as tf
 import numpy as np
 from policy_gradient import PolicyGradient
 from src.game import Game
+import time
+
+ROWS = 5
+COLS = 12
+
+class GameViewer:
+    def __init__(self, fps, render_fn, view_on):
+        self.fps = fps
+        self.render_fn = render_fn
+        self.view_on = view_on
+    def view(self, epoch):
+        if (epoch == self.view_on):
+            time.sleep(self.fps)
+            self.render_fn()
 
 class Uniqifier(object):
     def __init__(self):
@@ -23,7 +37,7 @@ class Uniqifier(object):
     def getObj(self, id):
         return self.reverse_map.get(id)
 
-class EnvManager():
+class EnvManager:
 
     def __init__(self, Game_class, init_config, env_settings):
         self.init_config = init_config
@@ -35,8 +49,9 @@ class EnvManager():
         self.policy = PolicyGradient(n_actions=len(self.actions), n_features=env_settings['input_size'], name=env_settings['policy_name'])
         self.uniqueStateAccessor = {state_feature: Uniqifier() for state_feature in env_settings['state_features']}
         
-    def reset(self,max_steps):
+    def reset(self, max_steps, view_on):
         self.current_game = self.Game({"max_steps": max_steps})
+        self.game_viewer = GameViewer(1/10, self.current_game.render, 7)
     
     def check_cursor_progression(self,cursor):
         reward_bonus = np.sum(np.subtract(self.prev_cursor_pos, cursor))
@@ -44,11 +59,12 @@ class EnvManager():
         return abs(reward_bonus)
 
 
-    def play_game(self, max_steps):
+    def play_game(self, max_steps, epoch):
         rewards = []
-        self.reset(max_steps)
+        self.reset(max_steps, view_on=7)
         obs, reward, done, info = self.start()
         obs = self.feed_observation(obs)
+
         #print(obs, len(obs))
         while not self.current_game.env['done']:
             action = self.policy.choose_action(obs)
@@ -59,7 +75,7 @@ class EnvManager():
             #    self.prev_cursor_pos = obs['cursor_position']
             
             obs = self.feed_observation(obs)
-
+            self.game_viewer.view(epoch)
             self.policy.store_transition(obs, action, reward)
             rewards.append(round(reward, 2))
         self.current_game.render()
@@ -95,14 +111,14 @@ class EnvManager():
         return inputs
 
     def start(self):
+
         return self.current_game.init(self.init_config)
 
 def gen_random_board(rows, cols):
     selection = ['M', 'T']
     
     return [''.join(np.random.choice(selection) for i in range(cols)) for j in range(rows)]
-ROWS = 12
-COLS = 12
+
 
 board = gen_random_board(ROWS, COLS)
 
@@ -113,11 +129,11 @@ init_config = {
     'l': 1,
     'h': 6
 }
-max_steps = ROWS * COLS * 3
+max_steps = (ROWS * COLS * 3)
 
 env_settings = {
     'actions': ['up', 'down', 'left', 'right', 'toggle'],
-    'input_size': 435,
+    'input_size': ROWS * COLS * 3 + 3,
     'state_features': [
         'ingredients_map',\
         'slices_map',\
@@ -142,7 +158,7 @@ episode = {
 }
 
 epoch = {
-    'count': 10,
+    'count': 21,
     'scores': [],
     'rewards': [],
     'avg_rewards': 0,
@@ -155,7 +171,7 @@ env = EnvManager(Game, init_config, env_settings)
 for epc in range(epoch['count']):
     for eps in range(episode['count']):
         print(f'Epoch: {epc} Game: {eps}')
-        reward, score = env.play_game(max_steps)
+        reward, score = env.play_game(max_steps, epc)
         episode_score = reward + score 
         episode['max_score'] = score if score > episode['max_score'] else episode['max_score']
         episode['max_reward'] = reward if reward > episode['max_reward'] else episode['max_reward']

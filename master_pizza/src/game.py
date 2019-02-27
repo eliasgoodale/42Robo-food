@@ -1,4 +1,4 @@
-from src.google_engineer import GoogleEngineer
+from src.g_engineer import GoogleEngineer
 from src.pizza import Pizza
 
 import numpy as np
@@ -223,9 +223,9 @@ class Game:
 
     def render(self):
         #print(self.hello)
-        #self.render_information()
+        self.render_information()
         self.serve_pizza.print_from(self.env)
-        #print(self.legend)
+        print(self.legend)
 
 
 

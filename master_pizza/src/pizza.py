@@ -114,8 +114,14 @@ class Pizza:
     def slice_at(self, position):
         ri, ci = position
         slice_id = self._map[ri][ci]
+        #print("SLICE_ID: ", slice_id)
+        #print("ROW: ", ri, "COL: ", ci )
+
         if slice_id == -1:
             return Slice(ri,ci,ri,ci)
+        ret = self._dict[slice_id]
+        #print ("RETURN VAL: ",ret)
+        #print ("BOOLMAP: ", self._map)
         return self._dict[slice_id]
 
     def increase(self, slice, direction, max_ingredients):

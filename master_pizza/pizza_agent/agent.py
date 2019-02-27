@@ -113,10 +113,10 @@ init_config = {
     'l': 1,
     'h': 6
 }
-max_steps = ROWS * COLS * 3
+max_steps = 500
 
 env_settings = {
-    'actions': ['up', 'down', 'left', 'right', 'toggle'],
+    'actions': ['down', 'right', 'toggle'],
     'input_size': 435,
     'state_features': [
         'ingredients_map',\

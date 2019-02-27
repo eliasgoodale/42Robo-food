@@ -36,7 +36,8 @@ class GoogleEngineer:
         next_cursor_position = tuple(x0+x1 for x0,x1 in zip(self.cursor_position,self.delta_position[direction]))
         if (next_cursor_position[0] >= 0 and next_cursor_position[0] < self.pizza.r and
             next_cursor_position[1] >= 0 and next_cursor_position[1] < self.pizza.c):
-
+            print(self.pizza.slice_at(self.cursor_position))
+            print("MOVED OUT" if self.pizza._map[next_cursor_position[0]][next_cursor_position[1]] == -1 else "STILL IN")
             self.cursor_position = next_cursor_position
             return NEUTRAL_REWARD
         return NEGATIVE_REWARD
@@ -44,6 +45,9 @@ class GoogleEngineer:
     def increase(self, direction):
         slice = self.pizza.slice_at(self.cursor_position)
         new_slice = self.pizza.increase(slice, direction, self.max_ingredients_per_slice)
+        print('SLICE: ', slice) 
+        print('NEW SLICE: ', new_slice)
+        print(direction)
         if (new_slice is not None and min(self.pizza.ingredients.of(new_slice)) >=
             self.min_each_ingredient_per_slice):
 
@@ -52,10 +56,18 @@ class GoogleEngineer:
             self.valid_slices.append(new_slice)
             score = self.score_of(new_slice) - self.score_of(slice)
             self.score += score
+            print(score, self.score)
+            print('POSITIVE---------------------')
             return score * POSITIVE_REWARD
+        if new_slice is not None:
+            print ("NEUTRAL----------")
+        else:
+            print ("NEGATIVE REWARD-----------------")
         return NEUTRAL_REWARD if new_slice is not None else NEGATIVE_REWARD
 
     def do(self, action):
+        print("MAP: ", self.pizza._map)
+
         if action == 'toggle':
             self.slice_mode = not self.slice_mode
             return NEUTRAL_REWARD

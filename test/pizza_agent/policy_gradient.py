@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from metrics import Metrics
-
+import datetime 
 # reproducible
 np.random.seed(42)
 tf.set_random_seed(42)
@@ -110,7 +110,7 @@ class PolicyGradient:
     def save_model(self, epc):
         print('Saving model to: ', self.save_name)
         # self.saver.save(self.sess, self.save_name + str(self.epoch_counter) + '.ckpt')
-        self.saver.save(self.sess, self.save_name + str(epc) + '.ckpt')
+        self.saver.save(self.sess, self.save_name + '-' + str(epc) + '-' + datetime.datetime.now().isoformat() + '.ckpt')
         # self.epoch_counter+=1
 
     def restore_model(self, model_name):

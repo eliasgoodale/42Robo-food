@@ -1,9 +1,13 @@
+
+import subprocess as sp
 import sys
+import select
 sys.path.append('..')
 import tensorflow as tf
 import numpy as np
 from policy_gradient import PolicyGradient
 from src.game import Game
+import time
 
 class Uniqifier(object):
     def __init__(self):
@@ -23,6 +27,17 @@ class Uniqifier(object):
     def getObj(self, id):
         return self.reverse_map.get(id)
 
+class GameViewer:
+    def __init__(self, render_fn, fps, rendering=False):
+        self.render_fn = render_fn
+        self.fps = fps
+        self.rendering=rendering
+
+    def render(self):
+        time.sleep(self.fps)
+        sp.call('clear',shell=True)
+        self.render_fn()
+
 class EnvManager():
 
     def __init__(self, Game_class, init_config, env_settings):
@@ -37,6 +52,7 @@ class EnvManager():
 
     def reset(self,max_steps):
         self.current_game = self.Game({"max_steps": max_steps})
+        self.game_viewer = GameViewer(self.current_game.render_live, 1/10)
 
     def check_cursor_progression(self,cursor):
         reward_bonus = np.sum(np.subtract(self.prev_cursor_pos, cursor))
@@ -44,7 +60,7 @@ class EnvManager():
         return abs(reward_bonus)
 
 
-    def play_game(self, max_steps):
+    def play_game(self, max_steps, epc):
         rewards = []
         self.reset(max_steps)
         obs, reward, done, info = self.start()
@@ -59,7 +75,8 @@ class EnvManager():
             #    self.prev_cursor_pos = obs['cursor_position']
 
             obs = self.feed_observation(obs)
-
+            if (self.game_viewer.rendering):
+                self.game_viewer.render()
             self.policy.store_transition(obs, action, reward)
             rewards.append(round(reward, 2))
         self.current_game.render()
@@ -110,8 +127,8 @@ init_config = {
     'pizza_lines': board,
     'r': ROWS,
     'c': COLS,
-    'l': 1,
-    'h': 6
+    'l': np.random.randint(1, 3),
+    'h': np.random.randint(5, 10)
 }
 max_steps = ROWS * COLS * 10
 
@@ -125,12 +142,12 @@ env_settings = {
         'slice_mode',\
         'min_each_ingredient_per_slice',\
         'max_ingredients_per_slice'],
-    'policy_name': 'default'
+    'policy_name': 'foodie-do'
 }
 
 
 episode = {
-    'count': 200,
+    'count': 100,
     'scores': [],
     'rewards': [],
     'avg_rewards': 0,
@@ -159,7 +176,7 @@ except:
 for epc in range(epoch['count']):
     for eps in range(episode['count']):
         print(f'Epoch: {epc} Game: {eps}')
-        reward, score = env.play_game(max_steps)
+        reward, score = env.play_game(max_steps, epc)
         episode_score = reward + score
         episode['max_score'] = score if score > episode['max_score'] else episode['max_score']
         episode['max_reward'] = reward if reward > episode['max_reward'] else episode['max_reward']

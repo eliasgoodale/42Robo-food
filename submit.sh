@@ -16,7 +16,7 @@ gcloud ml-engine jobs submit training $JOB_NAME \
     --region us-central1 \
     --config config.yaml \
     --runtime-version 1.10 \
-    -- \
+    --python-version 3.5
     --output-dir $BUCKET"pizza_agent_$now" \
     --learning-rate 0.0005 \
     --save-checkpoint-steps 10 \

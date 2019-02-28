@@ -1,6 +1,8 @@
+import sys
+sys.path.append('..')
 import numpy as np
 import tensorflow as tf
-from metrics import Metrics
+
 import datetime 
 # reproducible
 np.random.seed(42)
@@ -25,7 +27,7 @@ class PolicyGradient:
         self.name = name
         self.saving_model = saving_model
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
-        self.metrics = Metrics()
+        #self.metrics = Metrics()
 
         self._build_net()
 
@@ -33,7 +35,7 @@ class PolicyGradient:
 
         if saving_model:
             self.saver = tf.train.Saver()
-            self.save_name = 'models/'+name
+            self.save_path = './trainer/models/'+name
             #self.saver.restore(self.sess, "./models/default5.ckpt")
 
         if output_graph:
@@ -100,22 +102,23 @@ class PolicyGradient:
         self.ep_as.append(a)
         self.ep_rs.append(r)
 
-    def add_metrics(self, gameID):
-        self.metrics.statistical(self.ep_as, self.ep_rs, self.ep_obs, gameID)
-        self.metrics.most_common_actions(self.ep_as, gameID)
+    #def add_metrics(self, gameID):
+    #    self.metrics.statistical(self.ep_as, self.ep_rs, self.ep_obs, gameID)
+    #    self.metrics.most_common_actions(self.ep_as, gameID)
 
     def clear_rollout(self):
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
     def save_model(self, epc):
-        print('Saving model to: ', self.save_name)
+        print('Saving model to: ', self.save_path)
         # self.saver.save(self.sess, self.save_name + str(self.epoch_counter) + '.ckpt')
-        self.saver.save(self.sess, self.save_name + '-' + str(epc) + '-' + datetime.datetime.now().isoformat() + '.ckpt')
+        self.saver.save(self.sess, self.save_path + '-' + datetime.datetime.now().isoformat() + '.ckpt')
         # self.epoch_counter+=1
 
     def restore_model(self, model_name):
-        self.saver.restore(self.sess, './models/' + str(model_name) + '.ckpt')
-        input("Restoreing model from: models/" + model_name + '.ckpt')
+
+        self.saver.restore(self.sess, self.save_path+'.ckpt')
+        print("Restoring model from: ", self.save_path+'.ckpt')
 
     def learn(self, epc):
         # discount and normalize episode reward

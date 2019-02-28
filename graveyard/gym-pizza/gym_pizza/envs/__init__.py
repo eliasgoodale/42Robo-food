@@ -1,2 +1,0 @@
-from gym_pizza.envs.pizza_env import PizzaEnv
-from gym_pizza.envs.pizza_extrahard_env import PizzaExtraHardEnv

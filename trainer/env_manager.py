@@ -5,7 +5,7 @@ import select
 sys.path.append('..')
 import tensorflow as tf
 import numpy as np
-from policy_gradient import PolicyGradient
+from trainer.policy_gradient import PolicyGradient
 from src.game import Game
 import time
 

@@ -48,6 +48,7 @@ class AIPlayer():
         self.game_memory = {}
         self.prev_cursor_pos = (0, 0)
         self.actions = env_settings['actions']
+        self.rendering = env_settings['render']
         self.policy = PolicyGradient(
             n_actions=policy_settings['n_actions'],
             n_features=policy_settings['n_features'],
@@ -77,7 +78,8 @@ class AIPlayer():
             obs = self.feed_observation(obs)
             self.policy.store_transition(obs, action, reward)
             rewards.append(round(reward, 2))
-        self.current_game.render()
+        if self.rendering:
+            self.current_game.render()
         
         return sum(rewards), info['score']
 

@@ -53,9 +53,11 @@ def main(args):
     }
     print(args.model_name)
     ai = AIPlayer(PizzaGame, env_settings, pizza_config, policy_settings)
-    ai.policy.restore_model(args.model_name)
-
-    
+    if args.saving_model:
+        try:
+            ai.policy.restore_model(args.model_name)
+        except:
+            print('No model found: ', model_name)
     for epc in range(args.n_epoch):
         for eps in range(args.n_episodes):
             print(f'Epoch: {epc} Game: {eps}')

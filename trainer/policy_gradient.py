@@ -116,7 +116,6 @@ class PolicyGradient:
         # self.epoch_counter+=1
 
     def restore_model(self, model_name):
-
         self.saver.restore(self.sess, self.save_path+'.ckpt')
         print("Restoring model from: ", self.save_path+'.ckpt')
 

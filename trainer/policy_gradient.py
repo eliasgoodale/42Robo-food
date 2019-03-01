@@ -17,14 +17,15 @@ class PolicyGradient:
             reward_decay=0.95,
             output_graph=True,
             saving_model=True,
-            name='default'
+            model_name='default',
+            output_dir='/tmp/pizza_ai',
+            job_dir='/tmp/pizza_ai',
     ):
         # self.epoch_counter = 0
         self.n_actions = n_actions
         self.n_features = n_features
         self.lr = learning_rate
         self.gamma = reward_decay
-        self.name = name
         self.saving_model = saving_model
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
         #self.metrics = Metrics()
@@ -34,13 +35,15 @@ class PolicyGradient:
         self.sess = tf.Session()
 
         if saving_model:
+            self.model_name = model_name
             self.saver = tf.train.Saver()
-            self.save_path = './trainer/models/'+name
+            self.model_path = job_dir
             #self.saver.restore(self.sess, "./models/default5.ckpt")
 
         if output_graph:
             # IAN ADD, self.writer
-            self.writer = tf.summary.FileWriter("logs/", self.sess.graph)
+            self.job_dir = job_dir
+            self.writer = tf.summary.FileWriter(job_dir, self.sess.graph)
 
         self.sess.run(tf.global_variables_initializer())
 
@@ -110,14 +113,15 @@ class PolicyGradient:
         self.ep_obs, self.ep_as, self.ep_rs = [], [], []
 
     def save_model(self, epc):
-        print('Saving model to: ', self.save_path)
+        print('Saving model to: ', self.model_path)
         # self.saver.save(self.sess, self.save_name + str(self.epoch_counter) + '.ckpt')
-        self.saver.save(self.sess, self.save_path + '-' + datetime.datetime.now().isoformat() + '.ckpt')
+        self.saver.save(self.sess, self.model_path + '/' + self.model_name + '-' + datetime.datetime.now().isoformat() + '.ckpt')
         # self.epoch_counter+=1
 
     def restore_model(self, model_name):
-        self.saver.restore(self.sess, self.save_path+'.ckpt')
-        print("Restoring model from: ", self.save_path+'.ckpt')
+        restore_path = self.model_path + '/' + self.model_name + '.ckpt'
+        self.saver.restore(self.sess, restore_path)
+        print("Restoring model from: ", restore_path)
 
     def learn(self, epc):
         # discount and normalize episode reward

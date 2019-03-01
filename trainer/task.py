@@ -40,7 +40,9 @@ def main(args):
         'reward_decay': args.gamma,
         'output_graph': args.output_graph,
         'saving_model': args.saving_model,
-        'policy_name': args.model_name
+        'policy_name': args.model_name,
+        'output_dir': args.output_dir,
+        'job_dir': args.job_dir
     }
 
     env_settings = {
@@ -113,6 +115,14 @@ if __name__ == '__main__':
         '--output-graph',
         default=True,
         action='store_true')
+    parser.add_argument(
+        '--job-dir',
+        type=str,
+        default='/tmp/pizza_ai_output')
+    parser.add_argument(
+        '--output-dir',
+        type=str,
+        default='/tmp/pizza_ai_output')
     parser.add_argument(
         '--render',
         default=False,

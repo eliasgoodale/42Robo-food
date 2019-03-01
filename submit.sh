@@ -19,4 +19,3 @@ gcloud ml-engine jobs submit training $JOB_NAME \
     --python-version 3.5
     --output-dir $BUCKET"pizza_agent_$now" \
     --learning-rate 0.0005 \
-    --save-checkpoint-steps 10 \

@@ -56,7 +56,9 @@ class AIPlayer():
             reward_decay=policy_settings['reward_decay'],
             output_graph=policy_settings['output_graph'],
             saving_model=policy_settings['saving_model'],
-            name=policy_settings['policy_name'])
+            model_name=policy_settings['policy_name'],
+            output_dir=policy_settings['output_dir'],
+            job_dir=policy_settings['job_dir'])
         self.uniqueStateAccessor = {state_feature: MapReverseMap() for state_feature in env_settings['state_features']}
 
     def reset(self,max_steps):
